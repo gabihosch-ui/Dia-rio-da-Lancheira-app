@@ -2,7 +2,7 @@
 
 Regra: uma fase só começa após aprovação da anterior. Antes de iniciar, revisar contratos já existentes (`src/domain/models.ts`, `src/services/types.ts`) para evitar retrabalho.
 
-## Fase 1 — Fundação e protótipo navegável ✅ (aguardando aprovação)
+## Fase 1 — Fundação e protótipo navegável ✅ Aprovada em 16/11/2026 (testada no celular via Expo Go)
 
 | Entrega | Status | Onde |
 |---|---|---|
