@@ -32,10 +32,11 @@ Pendências da Fase 1 que dependem de material da marca: logo, cores/fonte ofici
 ## Fase 2 — Backend, autenticação e segurança (em andamento)
 
 - [x] Decisão: projeto Supabase novo na nuvem, em organização separada da área de membros.
-- [ ] Criar projeto Supabase **novo** (dev) — feito pela responsável no painel do Supabase.
+- [x] Projeto Supabase **novo** `diario-lancheira-dev` (ref `cffgnnbbyhfufnrkcybs`), em organização própria.
 - [x] Cliente Supabase com sessão em armazenamento seguro (`src/lib/supabase.ts`, `src/lib/secure-session-storage.ts`).
 - [x] Migração 1 escrita: perfis, papéis, auditoria, notificações, exclusão de conta, RLS (`supabase/migrations/`).
-- [ ] Aplicar a migração 1 no projeto de desenvolvimento.
+- [x] Migração 1 aplicada no projeto de desenvolvimento (16/11/2026). Conferido: sem login, todas as tabelas negam acesso.
+  - Para aplicar novas migrações: `npx.cmd supabase db push --remote`.
 - [ ] Cadastro/login (e-mail; Apple e Google previstos), sessão em `expo-secure-store`.
 - [ ] Perfis privados/públicos, papéis administrativos.
 - [ ] RLS em todas as tabelas com dados de usuário; funções privilegiadas auditáveis.
