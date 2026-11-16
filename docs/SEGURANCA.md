@@ -52,3 +52,13 @@ select id, 'admin' from auth.users where email = 'EMAIL-DA-RESPONSAVEL';
 ## Variáveis de ambiente do app
 
 Somente `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` (ver `.env.example`). O arquivo `.env` não vai para o Git. A chave `service_role` nunca entra no app nem no repositório.
+
+## Configuração do Auth por ambiente
+
+| Opção | Desenvolvimento | Produção (obrigatório) |
+|---|---|---|
+| Confirm email | desligado (para testes automatizados) | **ligado** |
+| Senha mínima | 8, letras e números | 8, letras e números |
+| Novos cadastros | ligados | ligados |
+
+As contas de teste (`.env.test`) existem apenas no projeto de desenvolvimento.
