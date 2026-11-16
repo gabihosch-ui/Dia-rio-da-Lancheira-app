@@ -29,7 +29,7 @@ Regra: uma fase só começa após aprovação da anterior. Antes de iniciar, rev
 
 Pendências da Fase 1 que dependem de material da marca: logo, cores/fonte oficiais, ícone, splash, fotos.
 
-## Fase 2 — Backend, autenticação e segurança (em andamento)
+## Fase 2 — Backend, autenticação e segurança ✅ Concluída em 16/11/2026 (exceto login Apple/Google, adiado para junto da Fase 3)
 
 - [x] Decisão: projeto Supabase novo na nuvem, em organização separada da área de membros.
 - [x] Projeto Supabase **novo** `diario-lancheira-dev` (ref `cffgnnbbyhfufnrkcybs`), em organização própria.
@@ -40,9 +40,9 @@ Pendências da Fase 1 que dependem de material da marca: logo, cores/fonte ofici
 - [x] Cadastro/login por e-mail, recuperação de senha, sair; rotas protegidas (`Stack.Protected`); sessão em `expo-secure-store`.
   - Testado no celular (Expo Go) em 16/11/2026: cadastro, login, perfil, edição de nome e sair.
 - [x] Recuperação de senha: URLs de retorno `exp://**` (Expo Go) e `diariodalancheira://**` cadastradas no projeto dev.
-  - [ ] Teste do link no celular.
-- [x] Exclusão de conta imediata: Edge Function `excluir-conta` (login recente, auditoria, cascata) + migração 2. Publicada no dev.
-- [ ] Login com Apple e Google (depende das contas de desenvolvedor).
+  - [x] Link testado no celular (Expo Go) em 16/11/2026.
+- [x] Exclusão de conta imediata: Edge Function `excluir-conta` (login recente, auditoria, cascata) + migração 2. Publicada no dev e testada no celular.
+- [→] Login com Apple e Google: adiado para junto da Fase 3 (depende das contas de desenvolvedor Apple e Google).
 - [x] Perfil real: leitura, edição de nomes, exclusão de conta.
 - [x] `npm run test:rls`: 27/27 aprovados em 16/11/2026 (isolamento + exclusão de conta) — duas contas de teste comuns e uma descartável por execução, no projeto dev ("Confirm email" desligado só no dev).
 - [x] Perfis privados/públicos, papéis administrativos, auditoria, estrutura de notificações.
