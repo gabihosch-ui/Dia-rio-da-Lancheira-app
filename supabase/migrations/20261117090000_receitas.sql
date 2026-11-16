@@ -147,6 +147,7 @@ create table public.receitas (
   capa_path           text check (capa_path is null or capa_path ~ '^capas/[0-9a-f-]{36}/[A-Za-z0-9._-]{1,80}$'),
   tempo_preparo_min   int not null check (tempo_preparo_min between 0 and 1440),
   tempo_cozimento_min int not null default 0 check (tempo_cozimento_min between 0 and 1440),
+  tempo_total_min     int generated always as (tempo_preparo_min + tempo_cozimento_min) stored,
   rendimento          text not null default '' check (char_length(rendimento) <= 60),
   pode_congelar       boolean not null default false,
   exclusiva           boolean not null default true,
@@ -288,7 +289,7 @@ revoke select on public.registro_tokens_video from authenticated;
 
 -- Colunas de receitas visíveis ao app (sem criado_por / criado_em).
 revoke select on public.receitas from authenticated;
-grant select (id, slug, titulo, descricao, capa_path, tempo_preparo_min, tempo_cozimento_min, rendimento,
+grant select (id, slug, titulo, descricao, capa_path, tempo_preparo_min, tempo_cozimento_min, tempo_total_min, rendimento,
   pode_congelar, exclusiva, destaque, status, publicada_em, busca, atualizado_em) on public.receitas to authenticated;
 
 -- Vídeo: o identificador no provedor nunca vai para o app.

@@ -17,6 +17,7 @@ import type { PlannerWeek } from '@/domain/models';
 import { useAsync } from '@/hooks/use-async';
 import { notify, notYet } from '@/lib/notify';
 import { canAdvance, PLANNER_STEPS, pruneWeek, TOTAL_STEPS } from '@/lib/planner';
+import { demoRecipes } from '@/data/demo/recipes';
 import { services } from '@/services';
 import { useDemoStore } from '@/state/demo-store';
 import { colors, radius, spacing } from '@/theme/tokens';
@@ -36,7 +37,8 @@ export default function PlannerWizardScreen() {
   const stored = getWeek(id);
 
   const data = useAsync(async () => {
-    const [recipes, sideItems] = await Promise.all([services.recipes.listAllFull(), services.catalog.listSideItems()]);
+    // O Planejador ainda usa as receitas demonstrativas; a ligação com a biblioteca real é a próxima fase.
+    const [recipes, sideItems] = await Promise.all([Promise.resolve(demoRecipes), services.catalog.listSideItems()]);
     return { recipes, sideItems };
   }, []);
 

@@ -20,10 +20,12 @@ import { confirmAction, notify, notYet } from '@/lib/notify';
 import { SUBSCRIPTION_LABEL } from '@/lib/subscription';
 import { useAuth } from '@/state/auth';
 import { useDemoStore } from '@/state/demo-store';
+import { useLibrary } from '@/state/library';
 import { colors, layout, spacing } from '@/theme/tokens';
 
 export default function ProfileScreen() {
-  const { subscription, favorites, weeks, localPosts, simulateErrors, setSimulateErrors } = useDemoStore();
+  const { subscription, weeks, localPosts, simulateErrors, setSimulateErrors } = useDemoStore();
+  const { favorites } = useLibrary();
   const { account, accountError, refreshAccount, signOut, isConfigured } = useAuth();
   const me = useMe();
   const sub = SUBSCRIPTION_LABEL[subscription.state];
@@ -78,7 +80,11 @@ export default function ProfileScreen() {
       </Card>
 
       <Row gap={spacing.sm} style={{ alignItems: 'stretch' }}>
-        <Stat label="Favoritas" value={favorites.size} onPress={() => router.push('/receitas')} />
+        <Stat
+          label="Favoritas"
+          value={favorites.size}
+          onPress={() => router.push({ pathname: '/receitas', params: { favoritas: '1' } })}
+        />
         <Stat label="Planejamentos" value={weeks.length} onPress={() => router.push('/planejador')} />
         <Stat label="Publicações" value={localPosts.length + 1} onPress={() => router.push('/comunidade')} />
       </Row>

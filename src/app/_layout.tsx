@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider, useAuth } from '@/state/auth';
 import { DemoStoreProvider } from '@/state/demo-store';
+import { LibraryProvider } from '@/state/library';
 import { colors } from '@/theme/tokens';
 
 SplashScreen.preventAutoHideAsync();
@@ -28,8 +29,10 @@ export default function RootLayout() {
       <ThemeProvider value={BrandTheme}>
         <AuthProvider>
           <DemoStoreProvider>
-            <StatusBar style="dark" />
-            <RootNavigator />
+            <LibraryProvider>
+              <StatusBar style="dark" />
+              <RootNavigator />
+            </LibraryProvider>
           </DemoStoreProvider>
         </AuthProvider>
       </ThemeProvider>

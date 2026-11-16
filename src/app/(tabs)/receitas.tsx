@@ -1,32 +1,38 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, ScrollView, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { RecipeRow } from '@/components/recipes/recipe-card';
-import { AppText, Chip, Icon, IconButton, Row, Screen } from '@/components/ui/primitives';
+import { RecipeCard, RecipeRow } from '@/components/recipes/recipe-card';
+import { AppText, Button, Chip, Icon, IconButton, Row } from '@/components/ui/primitives';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/states';
 import { useAsync } from '@/hooks/use-async';
+import { useRecipeSearch } from '@/hooks/use-recipe-search';
 import { services } from '@/services';
-import { useDemoStore } from '@/state/demo-store';
+import { useLibrary } from '@/state/library';
 import { colors, layout, radius, spacing } from '@/theme/tokens';
 
 export default function RecipesScreen() {
-  const params = useLocalSearchParams<{ q?: string }>();
-  const { demoHasClubAccess, favorites } = useDemoStore();
+  const params = useLocalSearchParams<{ q?: string; favoritas?: string }>();
+  const insets = useSafeAreaInsets();
+  const { access, isFavorite, refresh } = useLibrary();
 
   const [text, setText] = useState(params.q ?? '');
   const [debounced, setDebounced] = useState(text);
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [freezableOnly, setFreezableOnly] = useState(false);
   const [quickOnly, setQuickOnly] = useState(false);
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [favoritesOnly, setFavoritesOnly] = useState(params.favoritas === '1');
 
-  // Busca vinda da tela inicial: sincroniza quando o parâmetro muda.
-  const [lastQ, setLastQ] = useState(params.q);
-  if (params.q !== lastQ) {
-    setLastQ(params.q);
-    setText(params.q ?? '');
-    setDebounced(params.q ?? '');
+  // Parâmetros vindos de outras telas (busca da tela inicial, "Favoritas" do perfil).
+  const [lastParams, setLastParams] = useState(params);
+  if (params.q !== lastParams.q || params.favoritas !== lastParams.favoritas) {
+    setLastParams(params);
+    if (params.q !== undefined) {
+      setText(params.q);
+      setDebounced(params.q);
+    }
+    if (params.favoritas === '1') setFavoritesOnly(true);
   }
 
   useEffect(() => {
@@ -35,14 +41,15 @@ export default function RecipesScreen() {
   }, [text]);
 
   const categories = useAsync(() => services.recipes.listCategories(), []);
-  const results = useAsync(
-    () => services.recipes.search({ text: debounced, categoryId, freezableOnly, quickOnly }),
-    [debounced, categoryId, freezableOnly, quickOnly],
-  );
-
-  const list = results.status === 'success' ? results.data.filter((r) => !favoritesOnly || favorites.has(r.id)) : [];
-
-  const hasFilters = !!(debounced || categoryId || freezableOnly || quickOnly || favoritesOnly);
+  const hasFilters = !!(debounced.trim() || categoryId || freezableOnly || quickOnly || favoritesOnly);
+  const featured = useAsync(() => services.recipes.listFeatured(8), []);
+  const { state, loadMore, reload } = useRecipeSearch({
+    text: debounced,
+    categoryId,
+    freezableOnly,
+    quickOnly,
+    favoritesOnly,
+  });
 
   function clearFilters() {
     setText('');
@@ -53,8 +60,8 @@ export default function RecipesScreen() {
     setFavoritesOnly(false);
   }
 
-  return (
-    <Screen>
+  const header = (
+    <View style={{ gap: spacing.xl, paddingBottom: spacing.md }}>
       <View style={{ gap: spacing.xs }}>
         <AppText variant="display">Receitas</AppText>
         <AppText color={colors.textMuted}>Receitas oficiais do Diário da Lancheira</AppText>
@@ -66,17 +73,18 @@ export default function RecipesScreen() {
           borderRadius: radius.pill,
           borderWidth: 1.5,
           borderColor: colors.border,
-          paddingHorizontal: spacing.lg,
+          paddingLeft: spacing.lg,
           minHeight: layout.minTouchTarget,
         }}>
         <Icon name="search" size={20} color={colors.textSubtle} />
         <TextInput
           value={text}
           onChangeText={setText}
-          placeholder="Buscar por nome"
+          placeholder="Buscar pelo nome da receita"
           placeholderTextColor={colors.textSubtle}
-          accessibilityLabel="Buscar receitas por nome"
+          accessibilityLabel="Buscar receitas pelo nome"
           returnKeyType="search"
+          autoCorrect={false}
           style={{ flex: 1, fontSize: 16, color: colors.text, paddingVertical: spacing.md }}
         />
         {text ? (
@@ -84,68 +92,126 @@ export default function RecipesScreen() {
         ) : null}
       </Row>
 
-      <View style={{ gap: spacing.sm }}>
-        <AppText variant="caption" color={colors.textMuted} style={{ fontWeight: '700' }}>
-          Categorias
-        </AppText>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ marginHorizontal: -spacing.lg }}
-          contentContainerStyle={{ gap: spacing.sm, paddingHorizontal: spacing.lg }}>
-          <Chip label="Todas" selected={!categoryId} onPress={() => setCategoryId(null)} />
-          {categories.status === 'success'
-            ? categories.data.map((c) => (
-                <Chip
-                  key={c.id}
-                  label={c.name}
-                  emoji={c.emoji}
-                  selected={categoryId === c.id}
-                  onPress={() => setCategoryId(categoryId === c.id ? null : c.id)}
-                />
-              ))
-            : null}
-        </ScrollView>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ marginHorizontal: -spacing.lg }}
+        contentContainerStyle={{ gap: spacing.sm, paddingHorizontal: spacing.lg }}>
+        <Chip label="Todas" selected={!categoryId} onPress={() => setCategoryId(null)} />
+        {categories.status === 'success'
+          ? categories.data.map((c) => (
+              <Chip
+                key={c.id}
+                label={c.name}
+                emoji={c.emoji}
+                selected={categoryId === c.id}
+                onPress={() => setCategoryId(categoryId === c.id ? null : c.id)}
+              />
+            ))
+          : null}
+      </ScrollView>
 
-        <AppText variant="caption" color={colors.textMuted} style={{ fontWeight: '700', marginTop: spacing.sm }}>
-          Filtros
-        </AppText>
-        <Row gap={spacing.sm} wrap>
-          <Chip label="Favoritas" emoji="❤️" selected={favoritesOnly} onPress={() => setFavoritesOnly((v) => !v)} />
-          <Chip label="Congela bem" emoji="❄️" selected={freezableOnly} onPress={() => setFreezableOnly((v) => !v)} />
-          <Chip label="Até 30 min" emoji="⏱️" selected={quickOnly} onPress={() => setQuickOnly((v) => !v)} />
-        </Row>
-      </View>
+      <Row gap={spacing.sm} wrap>
+        <Chip label="Favoritas" emoji="❤️" selected={favoritesOnly} onPress={() => setFavoritesOnly((v) => !v)} />
+        <Chip label="Congela bem" emoji="❄️" selected={freezableOnly} onPress={() => setFreezableOnly((v) => !v)} />
+        <Chip label="Até 30 min" emoji="⏱️" selected={quickOnly} onPress={() => setQuickOnly((v) => !v)} />
+      </Row>
 
-      {results.status === 'loading' ? <LoadingState label="Buscando receitas…" /> : null}
-      {results.status === 'error' ? <ErrorState message={results.error.message} onRetry={results.reload} /> : null}
-      {results.status === 'success' && list.length === 0 ? (
-        <EmptyState
-          icon="search-outline"
-          title="Nenhuma receita encontrada"
-          message={
-            favoritesOnly ? 'Você ainda não tem favoritas com esses filtros.' : 'Tente outro nome ou remova os filtros.'
-          }
-          action={hasFilters ? { label: 'Limpar filtros', onPress: clearFilters } : undefined}
-        />
-      ) : null}
-
-      {results.status === 'success' && list.length > 0 ? (
+      {!hasFilters && featured.status === 'success' && featured.data.length > 0 ? (
         <View style={{ gap: spacing.md }}>
-          <AppText variant="caption" color={colors.textMuted}>
-            {list.length} {list.length === 1 ? 'receita' : 'receitas'}
-          </AppText>
-          {list.map((r) => (
-            <RecipeRow
-              key={r.id}
-              recipe={r}
-              locked={r.isExclusive && !demoHasClubAccess}
-              favorite={favorites.has(r.id)}
-              onPress={() => router.push(`/receita/${r.id}`)}
-            />
-          ))}
+          <AppText variant="subtitle">Em destaque</AppText>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginHorizontal: -spacing.lg }}
+            contentContainerStyle={{ gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.xs }}>
+            {featured.data.map((r) => (
+              <RecipeCard
+                key={r.id}
+                recipe={r}
+                width={200}
+                locked={r.isExclusive && !access.hasAccess}
+                favorite={isFavorite(r.id)}
+                onPress={() => router.push(`/receita/${r.id}`)}
+              />
+            ))}
+          </ScrollView>
         </View>
       ) : null}
-    </Screen>
+
+      {state.status === 'ready' && state.items.length > 0 ? (
+        <AppText variant="subtitle">{hasFilters ? 'Resultados' : 'Todas as receitas'}</AppText>
+      ) : null}
+    </View>
+  );
+
+  const footer =
+    state.status === 'ready' ? (
+      state.loadingMore ? (
+        <ActivityIndicator color={colors.accent} style={{ paddingVertical: spacing.xl }} />
+      ) : state.moreError ? (
+        <View style={{ alignItems: 'center', paddingVertical: spacing.lg }}>
+          <Button label="Carregar mais" variant="secondary" small onPress={loadMore} />
+        </View>
+      ) : undefined
+    ) : undefined;
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center' }}>
+      <FlatList
+        style={{ width: '100%', maxWidth: layout.maxContentWidth }}
+        contentContainerStyle={{
+          paddingTop: insets.top + spacing.lg,
+          paddingHorizontal: spacing.lg,
+          paddingBottom: spacing.xxxl,
+          gap: spacing.md,
+        }}
+        data={state.status === 'ready' ? state.items : []}
+        keyExtractor={(r) => r.id}
+        keyboardShouldPersistTaps="handled"
+        ListHeaderComponent={header}
+        ListFooterComponent={footer}
+        ListEmptyComponent={
+          state.status === 'loading' ? (
+            <LoadingState label="Buscando receitas…" />
+          ) : state.status === 'error' ? (
+            <ErrorState message={state.message} onRetry={reload} />
+          ) : (
+            <EmptyState
+              icon={favoritesOnly ? 'heart-outline' : 'search-outline'}
+              title={favoritesOnly ? 'Nenhuma favorita por aqui' : 'Nenhuma receita encontrada'}
+              message={
+                favoritesOnly
+                  ? 'Toque no coração de uma receita para guardá-la aqui.'
+                  : hasFilters
+                    ? 'Tente outro nome ou remova os filtros.'
+                    : 'As receitas aparecerão aqui assim que forem publicadas.'
+              }
+              action={hasFilters ? { label: 'Limpar filtros', onPress: clearFilters } : undefined}
+            />
+          )
+        }
+        renderItem={({ item }) => (
+          <RecipeRow
+            recipe={item}
+            locked={item.isExclusive && !access.hasAccess}
+            favorite={isFavorite(item.id)}
+            onPress={() => router.push(`/receita/${item.id}`)}
+          />
+        )}
+        onEndReachedThreshold={0.4}
+        onEndReached={loadMore}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => {
+              reload();
+              refresh();
+            }}
+            tintColor={colors.accent}
+          />
+        }
+      />
+    </View>
   );
 }

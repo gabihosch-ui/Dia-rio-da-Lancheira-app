@@ -16,8 +16,10 @@ export interface RecipeCategory {
 
 export interface Unit {
   id: ID;
-  /** Forma curta, ex.: "xíc.", "g", "colher (sopa)". */
+  /** Forma curta, ex.: "xíc.", "g", "c. sopa". */
   abbreviation: string;
+  singular?: string;
+  plural?: string;
 }
 
 export interface RecipeIngredient {
@@ -65,6 +67,56 @@ export interface Recipe extends RecipeSummary {
   steps: RecipeStep[];
   freezing: FreezingInfo;
   tips: string[];
+}
+
+// ---------- Biblioteca (dados reais) ----------
+
+export interface FreezingDetails {
+  /** Prazo informado pela equipe (nunca calculado automaticamente). */
+  days: number;
+  howToPack: string;
+  howToThaw: string;
+}
+
+export interface RecipeVideoInfo {
+  status: 'pendente' | 'pronto' | 'erro';
+  durationSeconds: number | null;
+}
+
+/** Conteúdo protegido: só chega ao app quando o servidor libera. */
+export interface RecipeContent {
+  ingredients: RecipeIngredient[];
+  steps: RecipeStep[];
+  freezing: FreezingDetails | null;
+  video: RecipeVideoInfo | null;
+}
+
+export interface RecipeDetail extends RecipeSummary {
+  description: string;
+  categories: RecipeCategory[];
+  /** null = conteúdo bloqueado pelo servidor (sem direito de acesso). */
+  content: RecipeContent | null;
+  /** Dicas existem só nos dados demonstrativos. */
+  tips?: string[];
+}
+
+/** Situação de acesso ao conteúdo do Clube, informada pelo servidor. */
+export interface ClubAccess {
+  hasAccess: boolean;
+  origin: 'equipe' | 'teste' | 'assinatura' | 'demo' | null;
+  validUntil: string | null;
+}
+
+/**
+ * Contrato para o Planejador (próxima fase): dados estruturados de uma receita
+ * com identificador estável, para cardápio e lista de compras.
+ */
+export interface PlannerRecipeSource {
+  id: ID;
+  title: string;
+  yieldLabel: string;
+  categoryIds: ID[];
+  ingredients: RecipeIngredient[];
 }
 
 export interface RecipeQuestion {

@@ -37,9 +37,6 @@ interface DemoStore {
   simulateErrors: boolean;
   setSimulateErrors: (v: boolean) => void;
 
-  favorites: Set<string>;
-  toggleFavorite: (recipeId: string) => void;
-
   plannerRules: PlannerRules;
   weeks: PlannerWeek[];
   getWeek: (id: string) => PlannerWeek | undefined;
@@ -67,7 +64,6 @@ function nextMonday(from: Date): string {
 export function DemoStoreProvider({ children }: { children: ReactNode }) {
   const [subState, setSubState] = useState<DemoSubscription>('nenhuma');
   const [simulateErrors, setSimErr] = useState(false);
-  const [favorites, setFavorites] = useState<Set<string>>(() => new Set(['r-muffin-banana']));
   const [weeks, setWeeks] = useState<PlannerWeek[]>(demoPlannerWeeks);
   const [localPosts, setLocalPosts] = useState<CommunityPost[]>([]);
   const [likes, setLikes] = useState<Record<string, boolean>>({});
@@ -75,15 +71,6 @@ export function DemoStoreProvider({ children }: { children: ReactNode }) {
   const setSimulateErrors = useCallback((v: boolean) => {
     demoRuntime.simulateErrors = v;
     setSimErr(v);
-  }, []);
-
-  const toggleFavorite = useCallback((id: string) => {
-    setFavorites((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
   }, []);
 
   const getWeek = useCallback((id: string) => weeks.find((w) => w.id === id), [weeks]);
@@ -149,8 +136,6 @@ export function DemoStoreProvider({ children }: { children: ReactNode }) {
       setDemoSubscription: setSubState,
       simulateErrors,
       setSimulateErrors,
-      favorites,
-      toggleFavorite,
       plannerRules: demoPlannerRules,
       weeks,
       getWeek,
@@ -169,8 +154,6 @@ export function DemoStoreProvider({ children }: { children: ReactNode }) {
       demoHasClubAccess,
       simulateErrors,
       setSimulateErrors,
-      favorites,
-      toggleFavorite,
       weeks,
       getWeek,
       createWeek,
