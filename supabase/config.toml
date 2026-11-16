@@ -429,3 +429,7 @@ enabled = true
 # compatível com as novas chaves de assinatura JWT do Supabase.
 [functions.excluir-conta]
 verify_jwt = false
+
+# Token temporário de vídeo: o token do usuário é validado dentro da função.
+[functions.video-token]
+verify_jwt = false
