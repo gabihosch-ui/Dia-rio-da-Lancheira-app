@@ -40,6 +40,16 @@ No PowerShell, use `npm.cmd` / `npx.cmd` (ou o Prompt de Comando).
 - `.env` — URL e chave pública do Supabase de desenvolvimento (modelo em `.env.example`). Sem ele, o app abre no modo demonstração, sem login.
 - `.env.test` — contas de teste usadas por `npm run test:rls`. Não versionado.
 
+## Painel administrativo (equipe)
+
+```bash
+cd admin
+npm.cmd install
+npm.cmd run dev
+```
+
+Abre em http://localhost:5180. Precisa de `admin/.env.local` (modelo em `admin/.env.example`) e de uma conta com papel `admin` ou `editor`.
+
 ## Estrutura
 
 ```

@@ -35,3 +35,19 @@ Trocar de dados demonstrativos para Supabase = criar `services/supabase.ts` impl
 ## Ambientes (a partir da Fase 2)
 
 `development`, `staging` (homologação) e `production`, cada um com seu próprio projeto Supabase e variáveis `EXPO_PUBLIC_*` (apenas URL e chave **anon**). Segredos (service_role, chaves Cloudflare, credenciais das lojas) só em Edge Functions/servidor.
+
+## Biblioteca de receitas (Fase 3)
+
+```
+App ──(chave pública + sessão)──► Supabase: RLS libera metadados / conteúdo conforme o direito
+ │                                   ▲
+ │  "Assistir"                       │ consulta como a própria pessoa
+ └──► Edge Function video-token ─────┘──► Cloudflare Stream (token assinado de 1 h) ──► URL HLS temporária ──► expo-video
+
+Painel web (admin/, Vite + React) ──(chave pública + login da equipe)──► funções admin_* (verificam papel, validam, auditam)
+                                                                       └► Storage: bucket receitas/capas
+```
+
+- `src/services/supabase-recipes.ts` implementa `RecipesService`; `src/services/demo.ts` mantém o modo demonstração (sem `.env`).
+- `src/state/library.tsx` guarda favoritos e a situação de acesso vinda do servidor.
+- Comunidade, notificações e Planejador continuam demonstrativos até as próximas fases.

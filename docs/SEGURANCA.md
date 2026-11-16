@@ -62,3 +62,17 @@ Somente `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` (ver `.env.
 | Novos cadastros | ligados | ligados |
 
 As contas de teste (`.env.test`) existem apenas no projeto de desenvolvimento.
+
+## Biblioteca de receitas (Fase 3)
+
+- **Acesso ao conteúdo exclusivo** é decidido no banco por `private.tem_acesso_clube()` (equipe ou direito ativo em `direitos_acesso`). O app só consulta `meu_acesso_clube()` para a interface; esconder um botão não é proteção.
+- **Acesso de teste:** concedido apenas por admin (painel › Acessos de teste ou função `admin_conceder_acesso_teste`), com prazo de 1 a 90 dias, motivo e auditoria. Não é assinatura, não gera cobrança, não é comprovante de pagamento. O app não tem nenhum caminho para conceder direitos.
+- **Rascunhos e despublicadas** não são entregues a ninguém fora da equipe.
+- **Escrita de receitas** só por funções `admin_*` (security definer com verificação de papel, validação e auditoria). Escrita direta nas tabelas está revogada.
+- **Vídeos:** o `provider_video_id` não é legível pelo app (privilégio por coluna). A Edge Function `video-token` valida o login, consulta o vídeo **como a própria pessoa** (RLS decide), limita a 30 pedidos/10 min por pessoa e pede ao Cloudflare um token assinado de 1 hora. Credenciais do Cloudflare ficam só como segredos da função. Sem credenciais, responde 503 — nunca devolve link público.
+- **Fotos:** só a equipe envia; o painel reduz e recodifica a imagem (remove EXIF/GPS); o bucket limita tipo e tamanho.
+- **Painel administrativo:** usa só a chave pública; cada ação é verificada no banco. Pendente: exigir MFA para admins (Supabase Auth MFA) antes de produção.
+
+### Testes de integração (executados contra o projeto dev)
+`tests/integration/receitas.test.ts` cobre: listagem de publicadas; bloqueio de conteúdo exclusivo; acesso por permissão de teste e revogação; bloqueio de rascunhos; favoritar, remover e isolamento; bloqueio de edição por usuário comum (funções, tabelas e storage); cadastro/edição/publicação pelo admin; validação de entradas; token de vídeo negado sem direito; vídeo indisponível.
+Exige a conta `TEST_ADMIN_EMAIL` (em `.env.test`) com papel admin concedido manualmente.

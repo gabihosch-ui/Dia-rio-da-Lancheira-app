@@ -50,14 +50,31 @@ Pendências da Fase 1 que dependem de material da marca: logo, cores/fonte ofici
 - [x] Testes automatizados: cenários 1, 4, 5, 6 e 10 de `SEGURANCA.md`.
 - [→] Receitas, Planejador e Comunidade continuam com dados demonstrativos: ligam ao Supabase nas Fases 4, 5 e 6.
 
-## Fase 3 — Assinatura mensal
-Compra, renovação, cancelamento, carência, expiração, reembolso, restauração, validação no servidor. Ver `docs/ASSINATURAS.md`.
+## Reorganização do cronograma (17/11/2026)
 
-## Fase 4 — Receitas e vídeos
-Cadastro administrativo, Cloudflare Stream com tokens temporários, fotos, pesquisa, favoritos persistentes.
+A integração de assinaturas com Apple/Google foi **adiada**. Nova ordem: Fase 3 = Biblioteca de receitas; a assinatura comercial passa a ser uma fase posterior (ver `docs/ASSINATURAS.md`). Até lá, conteúdo exclusivo é liberado apenas por **acesso de teste concedido por admin no servidor** — não é assinatura nem comprovante de pagamento.
 
-## Fase 5 — Planejador completo
-Persistência, histórico, reaproveitar semanas, PDF e compartilhamento. Ver `docs/PLANEJADOR.md`.
+## Fase 3 — Biblioteca de receitas (em andamento)
+
+| Entrega | Status |
+|---|---|
+| 3.1 Análise e modelagem (nomes em português, padrão do projeto) | ✅ |
+| 3.2 Migração 3: receitas, categorias, unidades, ingredientes, passos, congelamento, vídeos, favoritos, direitos de acesso, RLS, funções administrativas, bucket de capas | ✅ escrita e validada localmente (PGlite) · ⏳ aplicar no dev |
+| 3.2 Função `video-token` (direito no servidor, limite de pedidos, token temporário) | ✅ escrita · ⏳ publicar no dev |
+| 3.3 Catálogo real: busca sem acento, categorias do banco, filtros, destaques, paginação | ✅ |
+| 3.3 Página da receita: capa, categorias, tempo, rendimento, ingredientes marcáveis, preparo numerado, congelamento | ✅ |
+| 3.4 Favoritos persistidos por usuário | ✅ |
+| 3.4 Player de vídeo (expo-video) com endereço temporário | ✅ no app · ⚠️ **reprodução real pendente das credenciais do Cloudflare Stream** |
+| 3.5 Painel web (`admin/`): receitas, foto, ingredientes/etapas com ordem, congelamento, categorias, vídeo, rascunho/publicar/despublicar, acessos de teste | ✅ |
+| 3.6 Testes de integração da Fase 3 (`tests/integration/receitas.test.ts`) | ✅ escritos · ⏳ executar após publicar no dev |
+| "Adicionar ao Planejador" | Preparado (contrato `getForPlanner`); integração na próxima fase |
+| Compartilhar link | Não implementado: não há rota pública segura ainda |
+
+## Fase 4 — Planejador completo (próxima)
+Ligar o Planejador às receitas reais (`getForPlanner`), persistência por usuário, histórico, PDF/compartilhamento. Ver `docs/PLANEJADOR.md`.
+
+## Fase posterior — Assinatura mensal (adiada)
+Compra, renovação, cancelamento, carência, expiração, reembolso, restauração, validação no servidor; gravará direitos `tipo = 'assinatura'` em `direitos_acesso`. Ver `docs/ASSINATURAS.md`.
 
 ## Fase 6 — Comunidade
 Publicações com fotos (validação, remoção de metadados), comentários, curtidas, denúncias, bloqueios, moderação, limites contra abuso, notificações.
