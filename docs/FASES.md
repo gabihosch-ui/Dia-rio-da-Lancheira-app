@@ -38,6 +38,9 @@ Pendências da Fase 1 que dependem de material da marca: logo, cores/fonte ofici
 - [x] Migração 1 aplicada no projeto de desenvolvimento (16/11/2026). Conferido: sem login, todas as tabelas negam acesso.
   - Para aplicar novas migrações: `npx.cmd supabase db push --remote`.
 - [x] Cadastro/login por e-mail, recuperação de senha, sair; rotas protegidas (`Stack.Protected`); sessão em `expo-secure-store`.
+  - Testado no celular (Expo Go) em 16/11/2026: cadastro, login, perfil, edição de nome e sair.
+- [ ] Recuperação de senha: configurar URL de retorno no Supabase e testar o link no celular.
+- [ ] Função no servidor que conclui os pedidos de exclusão de conta.
 - [ ] Login com Apple e Google (depende das contas de desenvolvedor).
 - [x] Perfil real: leitura, edição de nomes, pedido de exclusão de conta.
 - [x] `npm run test:rls`: 26/26 aprovados em 16/11/2026 (duas contas de teste comuns no projeto dev; "Confirm email" desligado e senha mínima 8 só no dev).
