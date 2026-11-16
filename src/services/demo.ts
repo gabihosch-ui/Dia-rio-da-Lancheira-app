@@ -25,7 +25,10 @@ async function respond<T>(value: T): Promise<T> {
 }
 
 function normalize(s: string): string {
-  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  return s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
 }
 
 function toSummary(r: Recipe): RecipeSummary {

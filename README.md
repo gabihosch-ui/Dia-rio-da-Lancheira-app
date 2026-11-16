@@ -29,8 +29,16 @@ npm start
 ```bash
 npm run typecheck   # TypeScript
 npm run lint        # ESLint (expo lint)
-npm test            # Testes (Jest) das regras do Planejador
+npm test            # Testes de unidade (Jest)
+npm run test:rls    # Testes de isolamento (RLS) contra o Supabase de desenvolvimento
 ```
+
+No PowerShell, use `npm.cmd` / `npx.cmd` (ou o Prompt de Comando).
+
+### Configuração local
+
+- `.env` — URL e chave pública do Supabase de desenvolvimento (modelo em `.env.example`). Sem ele, o app abre no modo demonstração, sem login.
+- `.env.test` — contas de teste usadas por `npm run test:rls`. Não versionado.
 
 ## Estrutura
 

@@ -8,13 +8,15 @@ import { DemoNotice, LogoPlaceholder } from '@/components/ui/brand';
 import { AppText, Badge, Button, Card, Icon, IconButton, Row, Screen, Section } from '@/components/ui/primitives';
 import { ErrorState, LoadingState } from '@/components/ui/states';
 import { useAsync } from '@/hooks/use-async';
+import { useMe } from '@/hooks/use-me';
 import { greeting } from '@/lib/format';
 import { services } from '@/services';
 import { useDemoStore } from '@/state/demo-store';
 import { colors, layout, radius, spacing } from '@/theme/tokens';
 
 export default function HomeScreen() {
-  const { me, demoHasClubAccess, favorites, weeks, localPosts } = useDemoStore();
+  const { demoHasClubAccess, favorites, weeks, localPosts } = useDemoStore();
+  const me = useMe();
   const [query, setQuery] = useState('');
 
   const data = useAsync(async () => {
@@ -47,7 +49,8 @@ export default function HomeScreen() {
 
       <View style={{ gap: spacing.xs }}>
         <AppText variant="display">
-          {greeting()}, {me.fullName.split(' ')[0]}!
+          {greeting()}
+          {me ? `, ${me.fullName.split(' ')[0]}` : ''}!
         </AppText>
         <AppText color={colors.textMuted}>O que vai para a lancheira esta semana?</AppText>
       </View>

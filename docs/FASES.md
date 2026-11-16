@@ -37,7 +37,10 @@ Pendências da Fase 1 que dependem de material da marca: logo, cores/fonte ofici
 - [x] Migração 1 escrita: perfis, papéis, auditoria, notificações, exclusão de conta, RLS (`supabase/migrations/`).
 - [x] Migração 1 aplicada no projeto de desenvolvimento (16/11/2026). Conferido: sem login, todas as tabelas negam acesso.
   - Para aplicar novas migrações: `npx.cmd supabase db push --remote`.
-- [ ] Cadastro/login (e-mail; Apple e Google previstos), sessão em `expo-secure-store`.
+- [x] Cadastro/login por e-mail, recuperação de senha, sair; rotas protegidas (`Stack.Protected`); sessão em `expo-secure-store`.
+- [ ] Login com Apple e Google (depende das contas de desenvolvedor).
+- [x] Perfil real: leitura, edição de nomes, pedido de exclusão de conta.
+- [ ] Rodar `npm run test:rls` (aguarda desligar "Confirm email" no projeto de desenvolvimento).
 - [ ] Perfis privados/públicos, papéis administrativos.
 - [ ] RLS em todas as tabelas com dados de usuário; funções privilegiadas auditáveis.
 - [ ] Implementação Supabase de `src/services/types.ts`.

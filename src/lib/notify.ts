@@ -16,3 +16,21 @@ export function notify(title: string, message?: string) {
 export function notYet(feature: string, phase: string) {
   notify(feature, `Esta função será implementada na ${phase}. Neste protótipo nada é enviado ou salvo em servidor.`);
 }
+
+/** Pede confirmação antes de uma ação importante. Resolve true se a pessoa confirmar. */
+export function confirmAction(
+  title: string,
+  message: string,
+  confirmLabel: string,
+  destructive = false,
+): Promise<boolean> {
+  if (Platform.OS === 'web') {
+    return Promise.resolve(globalThis.confirm?.(`${title}\n\n${message}`) ?? false);
+  }
+  return new Promise((resolve) => {
+    Alert.alert(title, message, [
+      { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
+      { text: confirmLabel, style: destructive ? 'destructive' : 'default', onPress: () => resolve(true) },
+    ]);
+  });
+}
