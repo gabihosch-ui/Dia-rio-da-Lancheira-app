@@ -39,3 +39,16 @@ Na Fase 1 o app não faz nenhuma chamada de rede de dados.
 10. Exclusão de conta e dados associados.
 
 Nenhum mecanismo é considerado aprovado só por "funcionar visualmente".
+
+## Primeiro administrador
+
+Nenhum usuário consegue se tornar admin pelo app: só um admin pode conceder papéis (e toda concessão vai para `auditoria`). O primeiro admin é definido uma única vez pela responsável, no SQL Editor do projeto, depois de criar a própria conta:
+
+```sql
+insert into public.usuario_papeis (usuario_id, papel)
+select id, 'admin' from auth.users where email = 'EMAIL-DA-RESPONSAVEL';
+```
+
+## Variáveis de ambiente do app
+
+Somente `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` (ver `.env.example`). O arquivo `.env` não vai para o Git. A chave `service_role` nunca entra no app nem no repositório.

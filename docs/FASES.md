@@ -29,10 +29,13 @@ Regra: uma fase só começa após aprovação da anterior. Antes de iniciar, rev
 
 Pendências da Fase 1 que dependem de material da marca: logo, cores/fonte oficiais, ícone, splash, fotos.
 
-## Fase 2 — Backend, autenticação e segurança (próxima recomendada)
+## Fase 2 — Backend, autenticação e segurança (em andamento)
 
-- [ ] Criar projeto Supabase **novo** (dev) — exige autorização para provisionar.
-- [ ] Migrações versionadas iniciais (ver `docs/BANCO_DE_DADOS.md`).
+- [x] Decisão: projeto Supabase novo na nuvem, em organização separada da área de membros.
+- [ ] Criar projeto Supabase **novo** (dev) — feito pela responsável no painel do Supabase.
+- [x] Cliente Supabase com sessão em armazenamento seguro (`src/lib/supabase.ts`, `src/lib/secure-session-storage.ts`).
+- [x] Migração 1 escrita: perfis, papéis, auditoria, notificações, exclusão de conta, RLS (`supabase/migrations/`).
+- [ ] Aplicar a migração 1 no projeto de desenvolvimento.
 - [ ] Cadastro/login (e-mail; Apple e Google previstos), sessão em `expo-secure-store`.
 - [ ] Perfis privados/públicos, papéis administrativos.
 - [ ] RLS em todas as tabelas com dados de usuário; funções privilegiadas auditáveis.
