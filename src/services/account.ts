@@ -15,7 +15,6 @@ export interface MyAccount {
   createdAt: string;
   acceptedTermsAt: string | null;
   roles: string[];
-  deletionRequestedAt: string | null;
 }
 
 export class AccountError extends Error {}
@@ -29,11 +28,10 @@ function fail(e: PostgrestError | AuthError | null, fallback: string): never {
 export async function loadMyAccount(session: Session): Promise<MyAccount> {
   const sb = getSupabase();
   const uid = session.user.id;
-  const [priv, pub, roles, deletion] = await Promise.all([
+  const [priv, pub, roles] = await Promise.all([
     sb.from('perfis_privados').select('nome_completo, criado_em, aceitou_termos_em').eq('id', uid).single(),
     sb.from('perfis_publicos').select('nome_publico').eq('id', uid).single(),
     sb.from('usuario_papeis').select('papel'),
-    sb.from('solicitacoes_exclusao').select('solicitado_em, status').eq('status', 'pendente').maybeSingle(),
   ]);
   if (priv.error) fail(priv.error, 'Não foi possível carregar seu perfil.');
   if (pub.error) fail(pub.error, 'Não foi possível carregar seu perfil.');
@@ -45,7 +43,6 @@ export async function loadMyAccount(session: Session): Promise<MyAccount> {
     createdAt: priv.data.criado_em,
     acceptedTermsAt: priv.data.aceitou_termos_em,
     roles: (roles.data ?? []).map((r) => r.papel as string),
-    deletionRequestedAt: deletion.data?.solicitado_em ?? null,
   };
 }
 
@@ -78,7 +75,29 @@ export async function recordTermsAcceptance(userId: string) {
   if (error) fail(error, 'Não foi possível registrar o aceite dos termos.');
 }
 
-export async function requestAccountDeletion(userId: string) {
-  const { error } = await getSupabase().from('solicitacoes_exclusao').insert({ usuario_id: userId });
-  if (error && error.code !== '23505') fail(error, 'Não foi possível registrar o pedido. Tente novamente.');
+/**
+ * Exclui a conta definitivamente. Antes, confirma a senha (o servidor exige
+ * login recente) e então chama a Edge Function "excluir-conta".
+ */
+export async function deleteMyAccount(
+  email: string,
+  password: string,
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const sb = getSupabase();
+  const reauth = await sb.auth.signInWithPassword({ email, password });
+  if (reauth.error) {
+    return {
+      ok: false,
+      message:
+        reauth.error.code === 'invalid_credentials' ? 'Senha incorreta.' : 'Não foi possível confirmar sua senha.',
+    };
+  }
+  const { error } = await sb.functions.invoke('excluir-conta', { method: 'POST' });
+  if (error) {
+    if (__DEV__) console.warn('[conta] exclusão', error.message);
+    return { ok: false, message: 'Não foi possível excluir a conta agora. Tente novamente.' };
+  }
+  // A conta não existe mais: limpa a sessão local.
+  await sb.auth.signOut({ scope: 'local' });
+  return { ok: true };
 }

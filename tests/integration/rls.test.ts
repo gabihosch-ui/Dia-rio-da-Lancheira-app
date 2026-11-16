@@ -55,18 +55,14 @@ afterAll(async () => {
 });
 
 describe('sem login (anon)', () => {
-  it.each([
-    'perfis_privados',
-    'perfis_publicos',
-    'usuario_papeis',
-    'auditoria',
-    'notificacoes',
-    'solicitacoes_exclusao',
-  ])('não lê %s', async (table) => {
-    const { data, error } = await anon.from(table).select('*').limit(1);
-    expect(data).toBeNull();
-    expect(error?.code).toBe('42501'); // permission denied
-  });
+  it.each(['perfis_privados', 'perfis_publicos', 'usuario_papeis', 'auditoria', 'notificacoes'])(
+    'não lê %s',
+    async (table) => {
+      const { data, error } = await anon.from(table).select('*').limit(1);
+      expect(data).toBeNull();
+      expect(error?.code).toBe('42501'); // permission denied
+    },
+  );
 });
 
 describe('perfil privado', () => {
@@ -176,18 +172,6 @@ describe('notificações', () => {
 
   it('A não vê notificações de B', async () => {
     const { data } = await A.sb.from('notificacoes').select('*').eq('usuario_id', B.id);
-    expect(data ?? []).toEqual([]);
-  });
-});
-
-describe('exclusão de conta', () => {
-  it('A não pede exclusão da conta de B', async () => {
-    const { error } = await A.sb.from('solicitacoes_exclusao').insert({ usuario_id: B.id });
-    expect(error).not.toBeNull();
-  });
-
-  it('A não vê pedidos de exclusão de B', async () => {
-    const { data } = await A.sb.from('solicitacoes_exclusao').select('*').eq('usuario_id', B.id);
     expect(data ?? []).toEqual([]);
   });
 });

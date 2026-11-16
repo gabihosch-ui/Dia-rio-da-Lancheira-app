@@ -68,6 +68,7 @@ function RootNavigator() {
         <Stack.Screen name="assinatura" options={{ title: 'Meu plano e assinatura' }} />
         <Stack.Screen name="notificacoes" options={{ title: 'Notificações' }} />
         <Stack.Screen name="perfil/editar" options={{ title: 'Editar perfil' }} />
+        <Stack.Screen name="perfil/excluir-conta" options={{ title: 'Excluir conta' }} />
       </Stack.Protected>
 
       <Stack.Protected guard={!signedIn}>
