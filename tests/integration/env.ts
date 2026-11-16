@@ -33,4 +33,8 @@ export const testEnv = {
   anonKey: required('EXPO_PUBLIC_SUPABASE_ANON_KEY'),
   userA: { email: required('TEST_USER_A_EMAIL'), password: required('TEST_USER_A_PASSWORD') },
   userB: { email: required('TEST_USER_B_EMAIL'), password: required('TEST_USER_B_PASSWORD') },
+  /** Conta comum que recebe o papel de admin manualmente (ver docs/SEGURANCA.md). */
+  get admin() {
+    return { email: required('TEST_ADMIN_EMAIL'), password: required('TEST_ADMIN_PASSWORD') };
+  },
 };
