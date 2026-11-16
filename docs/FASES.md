@@ -39,15 +39,16 @@ Pendências da Fase 1 que dependem de material da marca: logo, cores/fonte ofici
   - Para aplicar novas migrações: `npx.cmd supabase db push --remote`.
 - [x] Cadastro/login por e-mail, recuperação de senha, sair; rotas protegidas (`Stack.Protected`); sessão em `expo-secure-store`.
   - Testado no celular (Expo Go) em 16/11/2026: cadastro, login, perfil, edição de nome e sair.
-- [ ] Recuperação de senha: configurar URL de retorno no Supabase e testar o link no celular.
-- [ ] Função no servidor que conclui os pedidos de exclusão de conta.
+- [x] Recuperação de senha: URLs de retorno `exp://**` (Expo Go) e `diariodalancheira://**` cadastradas no projeto dev.
+  - [ ] Teste do link no celular.
+- [x] Exclusão de conta imediata: Edge Function `excluir-conta` (login recente, auditoria, cascata) + migração 2. Publicada no dev.
 - [ ] Login com Apple e Google (depende das contas de desenvolvedor).
-- [x] Perfil real: leitura, edição de nomes, pedido de exclusão de conta.
-- [x] `npm run test:rls`: 26/26 aprovados em 16/11/2026 (duas contas de teste comuns no projeto dev; "Confirm email" desligado e senha mínima 8 só no dev).
-- [ ] Perfis privados/públicos, papéis administrativos.
-- [ ] RLS em todas as tabelas com dados de usuário; funções privilegiadas auditáveis.
-- [ ] Implementação Supabase de `src/services/types.ts`.
-- [ ] Testes automatizados de isolamento entre usuários (cenários 1, 4, 5, 6 de `SEGURANCA.md`).
+- [x] Perfil real: leitura, edição de nomes, exclusão de conta.
+- [x] `npm run test:rls`: 27/27 aprovados em 16/11/2026 (isolamento + exclusão de conta) — duas contas de teste comuns e uma descartável por execução, no projeto dev ("Confirm email" desligado só no dev).
+- [x] Perfis privados/públicos, papéis administrativos, auditoria, estrutura de notificações.
+- [x] RLS em todas as tabelas com dados de usuário; funções privilegiadas no schema `private`, com auditoria.
+- [x] Testes automatizados: cenários 1, 4, 5, 6 e 10 de `SEGURANCA.md`.
+- [→] Receitas, Planejador e Comunidade continuam com dados demonstrativos: ligam ao Supabase nas Fases 4, 5 e 6.
 
 ## Fase 3 — Assinatura mensal
 Compra, renovação, cancelamento, carência, expiração, reembolso, restauração, validação no servidor. Ver `docs/ASSINATURAS.md`.
