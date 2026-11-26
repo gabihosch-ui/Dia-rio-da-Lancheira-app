@@ -4,13 +4,14 @@ Aplicativo de assinatura do Diário da Lancheira (iOS e Android): receitas em v�
 
 > **Projeto independente.** Este repositório não tem nenhuma ligação com a área de membros existente (Lovable + Supabase de produção). Não há credenciais, conexões ou dados reais aqui. Veja `docs/SEGURANCA.md`, seção "Isolamento".
 
-## Situação atual: Fase 1 — protótipo navegável
+## Situação atual: Fase 3 — biblioteca de receitas (código pronto, falta publicar no dev)
 
 - Expo SDK 58, React Native 0.88, TypeScript strict, Expo Router.
-- Todos os dados são **demonstrativos** (`src/data/demo/`) e ficam só em memória.
-- Sem banco de dados, sem pagamentos, sem uploads, sem login.
+- Login por e-mail, sessão segura, perfis, papéis, auditoria e exclusão de conta no Supabase próprio (Fase 2).
+- Receitas, favoritos, vídeo protegido e painel administrativo escritos (Fase 3), aguardando publicação no Supabase de desenvolvimento.
+- Planejador, Comunidade, notificações e assinatura ainda usam dados **demonstrativos**.
 
-Checklist e próximos passos: `docs/FASES.md`.
+Situação detalhada: `PROJECT_STATUS.md`. Fases: `docs/FASES.md` e `ROADMAP.md`. Configuração: `SETUP.md`.
 
 ## Como rodar
 

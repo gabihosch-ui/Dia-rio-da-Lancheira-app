@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-/** LÃª variÃ¡veis de .env e .env.test (nÃ£o versionados) sem dependÃªncias extras. */
+/** Lê variáveis de .env e .env.test (não versionados) sem dependências extras. */
 function loadEnvFile(name: string): Record<string, string> {
   try {
     const text = readFileSync(join(__dirname, '..', '..', name), 'utf8');
@@ -24,7 +24,7 @@ const env = { ...loadEnvFile('.env'), ...loadEnvFile('.env.test'), ...process.en
 
 function required(key: string): string {
   const v = env[key];
-  if (!v) throw new Error(`VariÃ¡vel ${key} ausente (.env / .env.test).`);
+  if (!v) throw new Error(`Variável ${key} ausente (.env / .env.test).`);
   return v;
 }
 
